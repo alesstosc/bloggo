@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h2>{{ title }}</h2>
+    <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+        {{ form.hidden_tag() }} {# CSRF token #}
+        <div class="mb-3">
+            {{ render_field(form.username, class_arg="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ render_field(form.password, class_arg="form-control") }}
+        </div>
+        <div class="mb-3 form-check">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label") }}
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    <p>Nuovo utente? <a href="{{ url_for('auth.register') }}">Clicca per registrarti!</a></p>
+{% endblock %}

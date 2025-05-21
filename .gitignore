@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+blog_env/
+
+# Database
+instance/
+
+# Environment Variables
+.env
+.flaskenv
+
+# IDE specific
+.vscode/
+.idea/

@@ -1,0 +1,42 @@
+/blog_app
+├── app/
+│   ├── __init__.py         # Inizializzazione dell'app Flask e factory
+│   ├── models.py           # Modelli SQLAlchemy (User, Post)
+│   ├── extensions.py       # Istanze delle estensioni Flask (db, migrate, login_manager)
+│   ├── static/             # File statici (CSS, JS, immagini)
+│   │   └── css/
+│   │       └── style.css
+│   ├── templates/          # Template Jinja2
+│   │   ├── base.html
+│   │   ├── home.html
+│   │   ├── auth/
+│   │   │   ├── login.html
+│   │   │   └── register.html
+│   │   └── posts/
+│   │       ├── create_post.html
+│   │       ├── edit_post.html
+│   │       └── view_post.html
+│   │   └── errors/
+│   │       ├── 404.html
+│   │       └── 500.html
+│   ├── main/               # Blueprint per le funzionalità principali (es. homepage)
+│   │   ├── __init__.py
+│   │   └── routes.py
+│   ├── auth/               # Blueprint per l'autenticazione
+│   │   ├── __init__.py
+│   │   ├── forms.py
+│   │   └── routes.py
+│   └── posts/              # Blueprint per la gestione dei post
+│       ├── __init__.py
+│       ├── forms.py
+│       └── routes.py
+│   └── errors/             # Blueprint per la gestione degli errori
+│       ├── __init__.py
+│       └── handlers.py
+├── migrations/             # Script di migrazione del database (generati da Flask-Migrate)
+├── instance/               # File di configurazione specifici dell'istanza (es. database SQLite)
+├── .env                    # Variabili d'ambiente (per python-dotenv)
+├── .flaskenv               # Variabili d'ambiente per il comando flask
+├── config.py               # Configurazioni dell'applicazione
+├── run.py                  # Script per avviare l'applicazione
+└── requirements.txt        # Elenco delle dipendenze Python

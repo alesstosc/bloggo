@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Pagina Non Trovata</h1>
+    <p>La pagina che stai cercando non esiste.</p>
+    <p><a href="{{ url_for('main.index') }}">Torna alla Home</a></p>
+{% endblock %}

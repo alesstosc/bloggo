@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Post Recenti</h1>
+    {% if posts.items %}
+        {% for post in posts.items %}
+            <article class="mb-4">
+                <h2><a href="{{ url_for('posts.view_post', post_id=post.id) }}">{{ post.title }}</a></h2>
+                <p class="text-muted">
+                    Scritto da {{ post.author.username }} il {{ post.timestamp.strftime('%d-%m-%Y %H:%M') }}
+                </p>
+                <p>{{ post.content[:200] }}... <a href="{{ url_for('posts.view_post', post_id=post.id) }}">Leggi tutto</a></p>
+            </article>
+        {% endfor %}
+
+        <!-- Paginazione -->
+        <nav aria-label="Paginazione post">
+            <ul class="pagination justify-content-center">
+                {% if posts.has_prev %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=posts.prev_num) }}">Precedente</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Precedente</span></li>
+                {% endif %}
+
+                {% for page_num in posts.iter_pages() %}
+                    {% if page_num %}
+                        {% if posts.page == page_num %}
+                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=page_num) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=posts.next_num) }}">Successivo</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Successivo</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <p>Nessun post disponibile al momento.</p>
+    {% endif %}
+{% endblock %}
