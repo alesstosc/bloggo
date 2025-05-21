@@ -1,8 +1,26 @@
-// ... existing code ...
-<div class="mb-3">
-    {{ render_field(form.title, class_arg="form-control") }}
-</div>
-<div class="mb-3">
-    {{ render_field(form.content, class_arg="form-control") }}
-</div>
-// ... existing code ...
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+    <h2>Modifica Post</h2>
+    <form method="POST" novalidate enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ render_field(form.title, class_arg="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ render_field(form.content, class_arg="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ render_field(form.image_file, class_arg="form-control") }}
+            <small class="form-text text-muted">Formati supportati: JPG, PNG</small>
+        </div>
+        <div class="mb-3">
+            {{ render_field(form.image_url, class_arg="form-control") }}
+            <small class="form-text text-muted">Inserisci l'URL completo dell'immagine</small>
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+{% endblock %}

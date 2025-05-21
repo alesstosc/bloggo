@@ -25,6 +25,8 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_path = db.Column(db.String(255))  # Percorso locale dell'immagine
+    image_url = db.Column(db.String(255))   # URL esterno dell'immagine
 
     def __repr__(self):
         return f'<Post {self.title}>'
