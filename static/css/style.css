@@ -1,10 +1,26 @@
+.post-image-container {
+    width: 100%;
+    text-align: center;
+    margin: 20px auto;
+}
+
 .post-image {
-    max-width: 100%;
-    max-height: 300px;
-    width: auto;
-    height: auto;
+    height: 300px;   /* Altezza fissa per tutte le immagini */
+    width: auto;     /* Larghezza proporzionale */
+    max-width: 100%; /* Non supera mai la larghezza del contenitore */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     object-fit: contain;
-    border-radius: 5px;
-    margin: 0 auto 15px auto;
-    display: block;
+    display: inline-block;
+}
+
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-top: 30px;
+    padding: 0 15px;
+}
+
+.post-text {
+    margin-top: 20px;
 }

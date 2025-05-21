@@ -9,12 +9,18 @@
             </p>
         </header>
         <div class="post-content">
-            {{ post.content|safe }}
-            {% if post.image_path %}
-                <img src="{{ url_for('static', filename=post.image_path) }}" class="post-image">
-            {% elif post.image_url %}
-                <img src="{{ post.image_url }}" class="post-image">
+            {% if post.image_path or post.image_url %}
+            <div class="post-image-container">
+                {% if post.image_path %}
+                    <img src="{{ url_for('static', filename=post.image_path) }}" class="post-image">
+                {% else %}
+                    <img src="{{ post.image_url }}" class="post-image">
+                {% endif %}
+            </div>
             {% endif %}
+            <div class="post-text">
+                {{ post.content|safe }}
+            </div>
         </div>
         {% if post.author == current_user %}
             <hr>

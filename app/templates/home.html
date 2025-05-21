@@ -9,11 +9,13 @@
                 <p class="text-muted">
                     Scritto da {{ post.author.username }} il {{ post.timestamp.strftime('%d-%m-%Y %H:%M') }}
                 </p>
-                {% if post.image_path %}
-                    <img src="{{ url_for('static', filename=post.image_path) }}" class="post-image">
-                {% elif post.image_url %}
-                    <img src="{{ post.image_url }}" class="post-image">
-                {% endif %}
+                <div class="post-image-container">
+                    {% if post.image_path %}
+                        <img src="{{ url_for('static', filename=post.image_path) }}" class="post-image">
+                    {% else %}
+                        <img src="{{ post.image_url }}" class="post-image">
+                    {% endif %}
+                </div>
                 <p>{{ post.content[:200] }}... <a href="{{ url_for('posts.view_post', post_id=post.id) }}">Leggi tutto</a></p>
             </article>
         {% endfor %}
