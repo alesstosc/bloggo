@@ -1,0 +1,121 @@
+## Indicazioni per il Deploy del Blog e Configurazione Database su VPS
+
+Questo file riassume i passaggi necessari per mettere in produzione il blog Flask su un server VPS, con particolare attenzione alla configurazione del database.
+
+### 1. Preparazione del Server VPS
+
+*   **Accesso al VPS**: Connettiti al tuo VPS tramite SSH.
+*   **Aggiornamento del Sistema**: È buona norma aggiornare i pacchetti del sistema operativo.
+    ```bash
+    # Esempio per sistemi basati su Debian/Ubuntu
+    # sudo apt update
+    # sudo apt upgrade
+    ```
+
+### 2. Clonare il Repository del Progetto
+
+*   Clona il tuo repository Git contenente il codice del blog.
+    ```bash
+    git clone <URL_DEL_TUO_REPOSITORY>
+    cd <NOME_DELLA_CARTELLA_DEL_BLOG>
+    ```
+
+### 3. Configurazione dell'Ambiente Python
+
+*   **Creare un Ambiente Virtuale**:
+    ```bash
+    python3 -m venv venv
+    ```
+*   **Attivare l'Ambiente Virtuale**:
+    ```bash
+    source venv/bin/activate
+    ```
+*   **Installare le Dipendenze**:
+    Assicurati di avere un file `requirements.txt` nel tuo progetto (generato con `pip freeze > requirements.txt` nel tuo ambiente di sviluppo).
+    ```bash
+    pip install -r requirements.txt
+    ```
+    Se non hai `requirements.txt`, installa manualmente le librerie necessarie (Flask, SQLAlchemy, python-dotenv, Flask-Migrate, ecc.).
+
+### 4. Configurazione delle Variabili d'Ambiente
+
+*   Il file `config.py` utilizza un file `.env` per caricare le variabili d'ambiente. Crealo sul VPS:
+    ```bash
+    nano .env
+    ```
+*   Aggiungi le configurazioni necessarie. Per il database SQLite e la secret key, come minimo:
+    ```env
+    SECRET_KEY='LA_TUA_NUOVA_CHIAVE_SEGRETA_PER_LA_PRODUZIONE_MOLTO_ROBUSTA'
+    # DATABASE_URL='sqlite:////home/alesstosc/bloggo/instance/app.db' # Esempio esplicito per SQLite
+    # Se DATABASE_URL non è impostata, config.py userà 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
+    # Se intendi usare un altro database (es. PostgreSQL) in produzione, configura DATABASE_URL di conseguenza:
+    # DATABASE_URL='postgresql://utente:password@host:porta/nomedb'
+    ```
+    **Nota**: La `SECRET_KEY` in produzione deve essere robusta e unica.
+
+### 5. Inizializzazione e Migrazione del Database
+
+*   **Creare la Cartella `instance`** (se usi SQLite e il percorso è `instance/app.db` come da `config.py`):
+    Se la cartella `instance` non è stata committata (buona pratica), creala:
+    ```bash
+    mkdir instance
+    ```
+    Questo comando va eseguito nella root del progetto (es. `/home/alesstosc/bloggo/`).
+
+*   **Impostare `FLASK_APP`**:
+    Indica a Flask quale file avviare. Sostituisci `run.py` o `app.py` con il nome del tuo file principale (quello con `app = Flask(__name__)` o `create_app()`).
+    ```bash
+    export FLASK_APP=nome_del_tuo_file_principale.py # Esempio: export FLASK_APP=run.py
+    ```
+
+*   **Eseguire le Migrazioni del Database (se usi Flask-Migrate)**:
+    Questi comandi creeranno le tabelle del database basate sui tuoi modelli.
+    ```bash
+    # Solo se la cartella 'migrations' non è stata committata e la stai creando per la prima volta sul server:
+    # flask db init
+
+    # Per generare lo script di migrazione basato sui tuoi modelli (se hai fatto modifiche non ancora migrate):
+    # flask db migrate -m "Messaggio descrittivo della migrazione"
+
+    # Per applicare le migrazioni e creare/aggiornare le tabelle del database:
+    flask db upgrade
+    ```
+    Se `flask db upgrade` è il primo comando che crea il database, creerà il file `app.db` nella cartella `instance`.
+
+*   **Se non usi Flask-Migrate (e usi `db.create_all()`)**:
+    Dovrai avere un meccanismo per eseguire `db.create_all()`. Potrebbe essere uno script separato o una logica all'interno della tua app (generalmente eseguita una sola volta).
+
+### 6. Configurazione del Server WSGI di Produzione
+
+*   Il server di sviluppo di Flask (`flask run`) non è adatto per la produzione. Usa un server WSGI come Gunicorn.
+*   **Installare Gunicorn**:
+    ```bash
+    pip install gunicorn
+    ```
+*   **Eseguire Gunicorn**:
+    Sostituisci `nome_del_tuo_file_principale:app` con il riferimento corretto al tuo oggetto app Flask.
+    ```bash
+    # Esempio base:
+    gunicorn -w 4 'nome_del_tuo_file_principale:app'
+
+    # Esempio se il file è run.py e l'app si chiama 'app':
+    # gunicorn -w 4 'run:app'
+
+    # Potresti volerlo eseguire in background o gestirlo con un process manager come systemd.
+    # Esempio per bindare a un indirizzo e porta specifici:
+    # gunicorn --workers 3 --bind unix:bloggo.sock -m 007 nome_del_tuo_file_principale:app
+    ```
+
+### 7. (Raccomandato) Configurare un Reverse Proxy (Nginx o Apache)
+
+*   Un reverse proxy come Nginx può gestire le richieste HTTPS, servire file statici in modo efficiente e passare le richieste dinamiche al tuo server Gunicorn.
+*   La configurazione di Nginx/Apache è specifica per il server e va oltre questo riassunto, ma è un passo cruciale per un setup di produzione robusto.
+
+### Note Finali:
+
+*   **File Statici**: Assicurati che il tuo reverse proxy (Nginx) sia configurato per servire i file dalla tua cartella `static` (es. `/home/alesstosc/bloggo/static/`).
+*   **Permessi**: Verifica che l'utente con cui Gunicorn (o la tua app Flask) viene eseguito abbia i permessi necessari per leggere/scrivere nella cartella `instance` (per il database SQLite) e per accedere agli altri file del progetto.
+*   **Sicurezza**: Non usare mai la `SECRET_KEY` di sviluppo in produzione. Non esporre credenziali sensibili nel codice committato.
+*   **Backup**: Implementa una strategia di backup per il tuo database di produzione.
+
+Questo dovrebbe coprire i punti essenziali per rimettere in funzione il tuo blog sul VPS.
